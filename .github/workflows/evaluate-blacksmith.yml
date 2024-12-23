@@ -1,4 +1,4 @@
-name: Hourly Cost Evaluation Github
+name: Hourly Cost Evaluation Blacksmith
 
 on:
   schedule:
@@ -6,13 +6,13 @@ on:
 
 jobs:
   hello-world:
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2204
     steps:
       - name: Print Hello World
         run: echo "Hello, World!"
 
   evaluate-cost:
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2204
     needs: hello-world
     steps:
       - name: Checkout repository
@@ -22,7 +22,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # Use GitHub-provided environment variables to get the current repository
           REPO_OWNER="${{ github.repository_owner }}"
           REPO_NAME="${{ github.event.repository.name }}"
 
@@ -34,8 +33,7 @@ jobs:
           echo "Workflow Usage Data:"
           echo "$usage"
 
-          # Assuming a cost of $0.008 per minute for Linux runners (standard rate)
-          COST_PER_MINUTE=0.008
+          COST_PER_MINUTE=0.004
 
           # Calculate total minutes used and cost
           total_minutes=$(echo "$usage" | jq '[.billable[].total_minutes] | add // 0')
