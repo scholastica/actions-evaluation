@@ -1,0 +1,24 @@
+- name: Evaluate GitHub Actions Cost
+  env:
+    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  run: |
+    # Set variables
+    REPO_OWNER="your-username-or-org"
+    REPO_NAME="your-repo-name"
+
+    # Fetch workflow run usage data
+    usage=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+      "https://api.github.com/repos/$REPO_OWNER/$REPO_NAME/actions/runs" | \
+      jq '.workflow_runs[] | {id: .id, name: .name, run_attempt: .run_attempt, billable: .billable}')
+
+    echo "Workflow Usage Data:"
+    echo "$usage"
+
+    COST_PER_MINUTE=0.008
+
+    # Calculate total minutes used and cost
+    total_minutes=$(echo "$usage" | jq '[.billable[].total_minutes] | add')
+    total_cost=$(echo "$total_minutes * $COST_PER_MINUTE" | bc)
+
+    echo "Total Minutes Used: $total_minutes"
+    echo "Estimated Cost: $total_cost USD"
