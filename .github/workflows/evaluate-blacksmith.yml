@@ -27,15 +27,15 @@ jobs:
           # Fetch workflow run usage data
           usage=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
             "https://api.github.com/repos/$REPO_OWNER/$REPO_NAME/actions/runs" | \
-            jq '.workflow_runs[] | {id: .id, name: .name, run_attempt: .run_attempt, billable: .billable}')
+            jq '[.workflow_runs[] | {id: .id, name: .name, run_attempt: .run_attempt, billable: .billable}]')
 
           echo "Workflow Usage Data:"
           echo "$usage"
 
-          COST_PER_MINUTE=0.004
+          COST_PER_MINUTE=0.008
 
-          # Calculate total minutes used and cost
-          total_minutes=$(echo "$usage" | jq '[.billable[].total_minutes] | add // 0')
+          # Calculate total minutes used and cost, skipping null billable entries
+          total_minutes=$(echo "$usage" | jq '[.[] | select(.billable != null) | .billable.total_minutes] | add // 0')
           total_cost=$(echo "$total_minutes * $COST_PER_MINUTE" | bc)
 
           echo "Total Minutes Used: $total_minutes"
