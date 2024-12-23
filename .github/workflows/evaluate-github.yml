@@ -1,5 +1,4 @@
 name: Hourly Cost Evaluation Github
-
 on:
   schedule:
     - cron: '0 * * * *'  # This cron expression schedules the workflow to run every hour
