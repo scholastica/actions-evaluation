@@ -1,7 +1,7 @@
 name: Hourly Cost Evaluation Blacksmith
 on:
   schedule:
-  - cron: '0 * * * *'  # This cron expression schedules the workflow to run every hour
+  # - cron: '0 * * * *'  # This cron expression schedules the workflow to run every hour
 
 jobs:
   hello-world:
